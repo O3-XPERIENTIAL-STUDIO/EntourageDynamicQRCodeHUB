@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+        }
+
+        .create-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .create-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .list-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .list-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c33;
+        }
+
+        .success {
+            background: #efe;
+            color: #3c3;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3c3;
+        }
+
+        .qr-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .qr-item {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .qr-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        .qr-item.editing {
+            border-color: #28a745;
+        }
+
+        .qr-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .qr-id {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .qr-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .qr-url {
+            margin-bottom: 15px;
+        }
+
+        .qr-url-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .qr-url-value {
+            word-break: break-all;
+            color: #333;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+
+        .qr-url-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #28a745;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: monospace;
+        }
+
+        .qr-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .qr-link {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .qr-link:hover {
+            text-decoration: underline;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .qr-content {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .qr-image-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .qr-image {
+            width: 150px;
+            height: 150px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qr-image canvas,
+        .qr-image img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .qr-info {
+            flex: 1;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        @media (max-width: 768px) {
+            .qr-content {
+                grid-template-columns: 1fr;
+            }
+
+            .qr-image-container {
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔲 Dynamic QR Code Dashboard</h1>
+            <p>Create and manage your dynamic QR codes</p>
+        </div>
+
+        <div id="message-container"></div>
+
+        <div class="create-section">
+            <h2>Create New QR Code</h2>
+            <form id="create-form">
+                <div class="form-group">
+                    <label for="target-url">Target URL</label>
+                    <input type="url" id="target-url" name="target-url" placeholder="https://example.com" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create QR Code</button>
+            </form>
+        </div>
+
+        <div class="list-section">
+            <h2>All QR Codes</h2>
+            <div id="qr-list-container">
+                <div class="loading">Loading QR codes...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_API_URL = "https://udcwebapi2025-avdxdce9gngffkgx.uaenorth-01.azurewebsites.net";
+
+        // Show message
+        function showMessage(message, type = 'success') {
+            const container = document.getElementById('message-container');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type === 'error' ? 'error' : 'success';
+            messageDiv.textContent = message;
+            container.appendChild(messageDiv);
+
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        // Load all QR codes
+        async function loadQRCodes() {
+            const container = document.getElementById('qr-list-container');
+            container.innerHTML = '<div class="loading">Loading QR codes...</div>';
+
+            try {
+                const response = await fetch(`${BASE_API_URL}/api/dynamic-qr/all`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    credentials: 'omit'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to load QR codes: ${response.statusText}`);
+                }
+
+                const qrCodes = await response.json();
+
+                if (!Array.isArray(qrCodes)) {
+                    throw new Error('Invalid response format');
+                }
+
+                if (qrCodes.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                            <p>No QR codes found. Create your first one above!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = '<div class="qr-list"></div>';
+                const list = container.querySelector('.qr-list');
+
+                qrCodes.forEach(qr => {
+                    console.log('QR Code from API:', {
+                        uniqueId: qr.uniqueId,
+                        hasQrCodeBase64: !!qr.qrCodeBase64,
+                        qrCodeBase64Length: qr.qrCodeBase64 ? qr.qrCodeBase64.length : 0,
+                        qrCodeBase64Preview: qr.qrCodeBase64 ? qr.qrCodeBase64.substring(0, 50) + '...' : 'N/A',
+                        allKeys: Object.keys(qr)
+                    });
+                    const qrItem = createQRItem(qr);
+                    list.appendChild(qrItem);
+                });
+
+            } catch (error) {
+                console.error('Error loading QR codes:', error);
+                container.innerHTML = `<div class="error">Error loading QR codes: ${error.message}</div>`;
+            }
+        }
+
+        // Create QR item element
+        function createQRItem(qr) {
+            const item = document.createElement('div');
+            item.className = 'qr-item';
+            item.dataset.id = qr.id || qr.uniqueId;
+            item.dataset.uniqueId = qr.uniqueId;
+
+            const uniqueId = qr.uniqueId || qr.id || 'N/A';
+            const urlLink = qr.urlLink || qr.targetUrl || qr.url || '';
+            const createdAt = qr.createdAt || qr.created || '';
+            const qrCodeBase64 = qr.qrCodeBase64 || '';
+
+            const redirectUrl = `${window.location.origin}/redirect.html?uniqueid=${uniqueId}`;
+
+            console.log('QR Code Data:', { uniqueId, qrCodeBase64: qrCodeBase64 ? 'Present' : 'Missing', hasQrCode: !!qr.qrCodeBase64 });
+
+            item.innerHTML = `
+                <div class="qr-header">
+                    <div class="qr-id">ID: ${uniqueId}</div>
+                    <div class="qr-actions">
+                        <button class="btn btn-secondary btn-small edit-btn">Edit</button>
+                        <button class="btn btn-success btn-small save-btn" style="display: none;">Save</button>
+                        <button class="btn btn-danger btn-small cancel-btn" style="display: none;">Cancel</button>
+                    </div>
+                </div>
+                <div class="qr-content">
+                    <div class="qr-image-container">
+                        <div class="qr-image" id="qr-image-${uniqueId}">
+                            <div class="loading">Loading QR code...</div>
+                        </div>
+                        <button class="btn btn-info btn-small download-qr-btn" data-unique-id="${uniqueId}" data-qr-base64="${qrCodeBase64}">Download QR Code</button>
+                    </div>
+                    <div class="qr-info">
+                        <div class="qr-url">
+                            <div class="qr-url-label">Target URL:</div>
+                            <div class="qr-url-value">${urlLink}</div>
+                            <input type="url" class="qr-url-input" value="${urlLink}" style="display: none;">
+                        </div>
+                        <div class="qr-meta">
+                            <span>Created: ${createdAt ? new Date(createdAt).toLocaleString() : 'N/A'}</span>
+                            <a href="${redirectUrl}" target="_blank" class="qr-link">Test Redirect →</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Display QR code from base64 immediately
+            // Use requestAnimationFrame to ensure DOM is ready
+            requestAnimationFrame(() => {
+                displayQRCodeFromBase64(qrCodeBase64, `qr-image-${uniqueId}`, uniqueId);
+            });
+
+            // Edit button handler
+            const editBtn = item.querySelector('.edit-btn');
+            const saveBtn = item.querySelector('.save-btn');
+            const cancelBtn = item.querySelector('.cancel-btn');
+            const urlValue = item.querySelector('.qr-url-value');
+            const urlInput = item.querySelector('.qr-url-input');
+
+            editBtn.addEventListener('click', () => {
+                item.classList.add('editing');
+                urlValue.style.display = 'none';
+                urlInput.style.display = 'block';
+                editBtn.style.display = 'none';
+                saveBtn.style.display = 'inline-block';
+                cancelBtn.style.display = 'inline-block';
+            });
+
+            cancelBtn.addEventListener('click', () => {
+                item.classList.remove('editing');
+                urlInput.value = urlLink;
+                urlValue.style.display = 'block';
+                urlInput.style.display = 'none';
+                editBtn.style.display = 'inline-block';
+                saveBtn.style.display = 'none';
+                cancelBtn.style.display = 'none';
+            });
+
+            saveBtn.addEventListener('click', async () => {
+                const newUrl = urlInput.value.trim();
+                if (!newUrl) {
+                    showMessage('URL cannot be empty', 'error');
+                    return;
+                }
+
+                try {
+                    await updateQRCode(uniqueId, newUrl);
+                    urlValue.textContent = newUrl;
+                    item.classList.remove('editing');
+                    urlValue.style.display = 'block';
+                    urlInput.style.display = 'none';
+                    editBtn.style.display = 'inline-block';
+                    saveBtn.style.display = 'none';
+                    cancelBtn.style.display = 'none';
+                    showMessage('QR code updated successfully!');
+                    // Reload QR codes to get updated QR code image from API
+                    loadQRCodes();
+                } catch (error) {
+                    showMessage(`Error updating QR code: ${error.message}`, 'error');
+                }
+            });
+
+            // Download button handler
+            const downloadBtn = item.querySelector('.download-qr-btn');
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', () => {
+                    const base64 = downloadBtn.getAttribute('data-qr-base64');
+                    if (base64) {
+                        downloadQRCodeFromBase64(base64, uniqueId);
+                    } else {
+                        showMessage('QR code image not available', 'error');
+                    }
+                });
+            }
+
+            return item;
+        }
+
+        // Display QR code from base64
+        function displayQRCodeFromBase64(base64, containerId, uniqueId) {
+            const container = document.getElementById(containerId);
+            if (!container) {
+                console.error('Container not found:', containerId, 'Retrying...');
+                // Retry after a short delay
+                setTimeout(() => {
+                    const retryContainer = document.getElementById(containerId);
+                    if (retryContainer) {
+                        displayQRCodeFromBase64(base64, containerId, uniqueId);
+                    }
+                }, 100);
+                return;
+            }
+
+            console.log('Attempting to display QR code for:', uniqueId, 'Base64 present:', !!base64, 'Base64 length:', base64 ? base64.length : 0);
+
+            if (!base64 || base64.trim() === '') {
+                console.warn('No base64 QR code data for:', uniqueId);
+                container.innerHTML = '<div style="color: #999; font-size: 12px; text-align: center; padding: 20px;">QR code not available</div>';
+                return;
+            }
+
+            // Clean the base64 string (remove any whitespace, newlines, etc.)
+            const cleanBase64 = base64.trim().replace(/\s/g, '');
+
+            // Build the image source
+            let imageSrc;
+            if (cleanBase64.startsWith('data:image')) {
+                // Already has data URI prefix
+                imageSrc = cleanBase64;
+            } else if (cleanBase64.startsWith('/9j/') || cleanBase64.startsWith('iVBORw0KGgo')) {
+                // Check for JPEG (starts with /9j/) or PNG (starts with iVBORw0KGgo)
+                if (cleanBase64.startsWith('/9j/')) {
+                    imageSrc = `data:image/jpeg;base64,${cleanBase64}`;
+                } else {
+                    imageSrc = `data:image/png;base64,${cleanBase64}`;
+                }
+            } else {
+                // PNG base64 (default) - most QR codes are PNG
+                imageSrc = `data:image/png;base64,${cleanBase64}`;
+            }
+
+            console.log('Image src created, length:', imageSrc.length, 'First 50 chars:', imageSrc.substring(0, 50));
+
+            // Clear container and create image
+            container.innerHTML = '';
+            const img = document.createElement('img');
+            img.src = imageSrc;
+            img.alt = 'QR Code';
+            img.style.maxWidth = '100%';
+            img.style.maxHeight = '100%';
+            img.style.display = 'block';
+            img.style.margin = '0 auto';
+
+            img.onerror = function (e) {
+                console.error('Error loading QR code image for:', uniqueId, e);
+                container.innerHTML = '<div style="color: red; font-size: 12px; text-align: center; padding: 20px;">Error loading QR code</div>';
+            };
+
+            img.onload = function () {
+                console.log('QR code image loaded successfully for:', uniqueId);
+            };
+
+            container.appendChild(img);
+        }
+
+        // Download QR code from base64
+        function downloadQRCodeFromBase64(base64, uniqueId) {
+            if (!base64) {
+                showMessage('QR code image not available', 'error');
+                return;
+            }
+
+            try {
+                // Handle different base64 formats
+                let imageSrc = base64;
+
+                if (!base64.startsWith('data:image')) {
+                    if (base64.startsWith('/9j/')) {
+                        imageSrc = `data:image/jpeg;base64,${base64}`;
+                    } else {
+                        imageSrc = `data:image/png;base64,${base64}`;
+                    }
+                }
+
+                // Convert base64 to blob and download
+                fetch(imageSrc)
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const link = document.createElement('a');
+                        link.download = `qrcode-${uniqueId}.png`;
+                        link.href = URL.createObjectURL(blob);
+                        link.click();
+                        URL.revokeObjectURL(link.href);
+                    })
+                    .catch(error => {
+                        console.error('Error downloading QR code:', error);
+                        showMessage('Error downloading QR code', 'error');
+                    });
+            } catch (error) {
+                console.error('Error processing QR code download:', error);
+                showMessage('Error downloading QR code', 'error');
+            }
+        }
+
+
+        // Create new QR code
+        async function createQRCode(url) {
+            try {
+                // API expects [FromBody] string, so send URL as plain JSON string
+                const response = await fetch(`${BASE_API_URL}/api/dynamic-qr/create`, {
+                    method: 'POST',
+                    mode: 'cors',
+                    credentials: 'omit',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(url) // Send as plain string, not object
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Failed to create QR code: ${response.statusText} - ${errorText}`);
+                }
+
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Error creating QR code:', error);
+                throw error;
+            }
+        }
+
+        // Update QR code
+        async function updateQRCode(uniqueId, url) {
+            try {
+                // Try PUT first, then PATCH if PUT doesn't work
+                let response = await fetch(`${BASE_API_URL}/api/dynamic-qr/${uniqueId}`, {
+                    method: 'PUT',
+                    mode: 'cors',
+                    credentials: 'omit',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ targetUrl: url })
+                });
+
+                if (!response.ok && response.status === 405) {
+                    // Try PATCH if PUT is not allowed
+                    response = await fetch(`${BASE_API_URL}/api/dynamic-qr/${uniqueId}`, {
+                        method: 'PATCH',
+                        mode: 'cors',
+                        credentials: 'omit',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ targetUrl: url })
+                    });
+                }
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Failed to update QR code: ${response.statusText} - ${errorText}`);
+                }
+
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Error updating QR code:', error);
+                throw error;
+            }
+        }
+
+        // Form submit handler
+        document.getElementById('create-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const urlInput = document.getElementById('target-url');
+            const url = urlInput.value.trim();
+
+            if (!url) {
+                showMessage('Please enter a valid URL', 'error');
+                return;
+            }
+
+            try {
+                await createQRCode(url);
+                showMessage('QR code created successfully!');
+                urlInput.value = '';
+                loadQRCodes();
+            } catch (error) {
+                showMessage(`Error creating QR code: ${error.message}`, 'error');
+            }
+        });
+
+        // Load QR codes on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadQRCodes();
+        });
+    </script>
+</body>
+
+</html>
