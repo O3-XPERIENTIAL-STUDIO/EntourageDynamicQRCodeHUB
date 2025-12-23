@@ -675,7 +675,7 @@
         async function updateQRCode(uniqueId, url) {
             try {
                 const response = await fetch(`${BASE_API_URL}/api/dynamic-qr/update`, {
-                    method: 'POST',
+                    method: 'PUT',
                     mode: 'cors',
                     credentials: 'omit',
                     headers: {
