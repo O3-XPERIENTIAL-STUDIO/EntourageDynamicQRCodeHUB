@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Redirecting...</title>
+    <script>
+        async function redirect() {
+            const BASE_API_URL = "https://udcwebapi2025-avdxdce9gngffkgx.uaenorth-01.azurewebsites.net";
+            const urlParams = new URLSearchParams(window.location.search);
+            const uniqueId = urlParams.get('uniqueid');
+
+            console.log(uniqueId);
+
+            if (!uniqueId) {
+                document.body.innerText = "Invalid ID!";
+                return;
+            }
+
+            // Try to get JSON response first, but if API redirects, handle it gracefully
+            try {
+                const response = await fetch(`${BASE_API_URL}/api/dynamic-qr/r/${uniqueId}`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    credentials: 'omit'
+                });
+
+                // If response is OK, try to parse as JSON
+                if (response.ok) {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        const data = await response.json();
+                        if (data.urlLink) {
+                            window.location.href = data.urlLink;
+                            return;
+                        }
+                    }
+                }
+
+                // If not JSON or not OK, redirect to API endpoint
+                // The server will handle the redirect to the final URL
+                window.location.href = `${BASE_API_URL}/api/dynamic-qr/r/${uniqueId}`;
+            } catch (err) {
+                // If any error occurs (including CORS), redirect directly to API endpoint
+                // The server will handle the redirect to the final URL
+                // This avoids CORS issues because browser navigation follows redirects naturally
+                console.log("Error fetching URL, redirecting to API endpoint:", err.message);
+                window.location.href = `${BASE_API_URL}/api/dynamic-qr/r/${uniqueId}`;
+            }
+        }
+
+        window.onload = redirect;
+    </script>
+</head>
+
+<body>
+    <h2>Redirecting...</h2>
+</body>
+
+</html>
