@@ -674,29 +674,18 @@
         // Update QR code
         async function updateQRCode(uniqueId, url) {
             try {
-                // Try PUT first, then PATCH if PUT doesn't work
-                let response = await fetch(`${BASE_API_URL}/api/dynamic-qr/${uniqueId}`, {
-                    method: 'PUT',
+                const response = await fetch(`${BASE_API_URL}/api/dynamic-qr/update`, {
+                    method: 'POST',
                     mode: 'cors',
                     credentials: 'omit',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ targetUrl: url })
+                    body: JSON.stringify({
+                        uniqueId: uniqueId,
+                        targetUrl: url
+                    })
                 });
-
-                if (!response.ok && response.status === 405) {
-                    // Try PATCH if PUT is not allowed
-                    response = await fetch(`${BASE_API_URL}/api/dynamic-qr/${uniqueId}`, {
-                        method: 'PATCH',
-                        mode: 'cors',
-                        credentials: 'omit',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ targetUrl: url })
-                    });
-                }
 
                 if (!response.ok) {
                     const errorText = await response.text();
