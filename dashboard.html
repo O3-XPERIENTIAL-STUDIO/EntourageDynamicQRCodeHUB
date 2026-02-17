@@ -431,7 +431,7 @@
             const createdAt = qr.createdAt || qr.created || '';
             const qrCodeBase64 = qr.qrCodeBase64 || '';
 
-            const redirectUrl = `https://entourage-events-tech.github.io/EntourageDynamicQRCodeHUB/redirect.html?uniqueid=${uniqueId}`;
+            const redirectUrl = new URL(`redirect.html?uniqueid=${uniqueId}`, window.location.href).href;
 
             console.log('QR Code Data:', { uniqueId, qrCodeBase64: qrCodeBase64 ? 'Present' : 'Missing', hasQrCode: !!qr.qrCodeBase64 });
 
